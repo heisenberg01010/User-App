@@ -29,12 +29,14 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.ServerTimestamp;
+import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -49,8 +51,7 @@ public class MainActivity extends AppCompatActivity {
     private Cart cart = new Cart();
     private ProductsAdapter adapter;
     private MyApp app;
-    private List<Product> list;
-
+    private List<Product> list = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         b = ActivityMainBinding.inflate(getLayoutInflater());
@@ -59,8 +60,6 @@ public class MainActivity extends AppCompatActivity {
         app = (MyApp) getApplicationContext();
         subscribeToTopic();
         loadPreviousData();
-
-
     }
     private void sendNotification(String order) {
         String message = MessageFormatter
@@ -90,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void subscribeToTopic() {
-        FirebaseMessaging.getInstance().subscribeToTopic("messages");
+        FirebaseMessaging.getInstance().subscribeToTopic("users");
         Toast.makeText(this, "Subscribed", Toast.LENGTH_SHORT).show();
     }
 
@@ -105,11 +104,12 @@ public class MainActivity extends AppCompatActivity {
         b.checkout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                app.db.collection("orders").add(new Order("Jai Lodha", "A-29 Nirman Nagar Jaipur", cart.cartItemMap, cart.subTotal, Order.OrderStatus.PLACED))
+                app.db.collection("orders").add(new Order("Jai Lodha", "A-29 Parashvanath Colonny Jaipur", cart.cartItemMap, cart.subTotal, Order.OrderStatus.PLACED))
                         .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                             @Override
                             public void onSuccess(DocumentReference documentReference) {
                                 String order_id = documentReference.getId();
+                                documentReference.update("order_id",order_id);
                                 sendNotification(order_id);
                             }
                         }).addOnFailureListener(new OnFailureListener() {
@@ -177,5 +177,8 @@ public class MainActivity extends AppCompatActivity {
             b.cartSummary.setText("Total : Rs. " + cart.subTotal + "\n" + cart.noOfItems + " items");
         }
 
+    }
+    private void setup() {
+        app = (MyApp) getApplicationContext();
     }
 }

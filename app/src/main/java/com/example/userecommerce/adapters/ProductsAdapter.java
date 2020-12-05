@@ -15,6 +15,7 @@ import com.example.userecommerce.models.Cart;
 import com.example.userecommerce.models.Product;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 //Adapter for list of products
@@ -106,3 +107,4 @@ public class ProductsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
     }
 }
+
